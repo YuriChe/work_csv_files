@@ -1,0 +1,43 @@
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
+
+public class App implements Runnable {
+    private Set<String[]> resultDataSet;
+
+    public App(Set<String[]> resultDataSet) {
+        this.resultDataSet = resultDataSet;
+    }
+
+    @Override
+    public void run() {
+        // Ваш код для обработки данных и добавления в resultDataSet
+        String[] data = {/* ваш массив данных */};
+        resultDataSet.add(data);
+    }
+
+    public static void main(String[] args) {
+        // Создаем общий Set для результатов
+        Set<String[]> finalResultSet = new ConcurrentSkipListSet<>();
+
+        // Создаем несколько потоков
+        Thread thread1 = new Thread(new App(finalResultSet), "MyThread1");
+        Thread thread2 = new Thread(new App(finalResultSet), "MyThread2");
+
+        // Запускаем потоки
+        thread1.start();
+        thread2.start();
+
+        try {
+            // Ждем завершения потоков
+            thread1.join();
+            thread2.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Выводим результат
+        finalResultSet.forEach(data -> {
+            // Обработка данных из resultDataSet
+        });
+    }
+}

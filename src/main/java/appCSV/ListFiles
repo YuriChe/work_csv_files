@@ -1,0 +1,22 @@
+final String[] FILE_NAMES = {
+                "C:\\Users\\asus\\IdeaProjects\\wildberries_full\\0.148-74996241754.csv",
+                "C:\\Users\\asus\\IdeaProjects\\wildberries_full\\1.74996246475-79037629994.csv",
+                "C:\\Users\\asus\\IdeaProjects\\wildberries_full\\2.79037629999-79089859893.csv",
+                "C:\\Users\\asus\\IdeaProjects\\wildberries_full\\3.79089861543-79139204703.csv",
+                "C:\\Users\\asus\\IdeaProjects\\wildberries_full\\4.79139204768-79167667295.csv",
+                "C:\\Users\\asus\\IdeaProjects\\wildberries_full\\5.79167667298-79224323318.csv",
+                "C:\\Users\\asus\\IdeaProjects\\wildberries_full\\6.79224323319-79265608367.csv",
+                "C:\\Users\\asus\\IdeaProjects\\wildberries_full\\7.79265608368-79516517822.csv",
+                "C:\\Users\\asus\\IdeaProjects\\wildberries_full\\8.79516517873-79678855533.csv",
+                "C:\\Users\\asus\\IdeaProjects\\wildberries_full\\9.79678864316-85087551320.csv"
+        };
+        final String[] FILE_NAMES2 = {
+                "C:\\Users\\asus\\IdeaProjects\\wildberries_full\\1.74996246475-79037629994.csv", //СТРОКА 92461 ошибка 1905 года ул,ucftnx,433565,1,1
+                "C:\\Users\\asus\\IdeaProjects\\wildberries_full\\2.79037629999-79089859893.csv", //СТРОКА 92773 ошибка кв.36,wztv69,533697,1,1
+                "C:\\Users\\asus\\IdeaProjects\\wildberries_full\\6.79224323319-79265608367.csv" //СТРОКА 35495 ошибка кв.39,ucft2r,404440,1,1
+
+        };
+
+        Map<String, String> values = new CSVReaderHeaderAware(new FileReader(FILE_NAMES[0])).readMap();
+        //        values.entrySet().forEach(x -> System.out.println(x.getValue()));
+        //        System.out.println(values.size());
