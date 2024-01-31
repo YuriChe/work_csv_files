@@ -1,11 +1,11 @@
 package appCSV.names;
 
-import appCSV.search.SearchCSV;
+import appCSV.search.SearchCSVImpl;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Names extends SearchCSV implements INames {
+public class Names extends SearchCSVImpl implements INames {
     @Override
     public Set<String> namesSet(List<String[]> list) {
 //        создает Set имен всех из БД

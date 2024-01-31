@@ -1,8 +1,8 @@
 package appCSV;
 
 import appCSV.readers.ReadCSV_ByLine;
-import appCSV.search.ISearchCSV;
 import appCSV.search.SearchCSV;
+import appCSV.search.SearchCSVImpl;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
@@ -27,7 +27,7 @@ public class App implements Runnable {
     public void run() {
 
         ReadCSV_ByLine readCSVByLine = new ReadCSV_ByLine();
-        ISearchCSV<String[]> searchCSV = new SearchCSV();
+        SearchCSV<String[]> searchCSV = new SearchCSVImpl();
         List<String[]> tempList = new ArrayList<>();
         tempList = readCSVByLine.reader(String.valueOf(file), 1, 0);
         WeakReference<List<String[]>> weakReference = new WeakReference<>(tempList);
@@ -52,7 +52,7 @@ public class App implements Runnable {
                 semaphore.acquire();
 
                 ReadCSV_ByLine readCSVByLine = new ReadCSV_ByLine();
-                ISearchCSV<String[]> searchCSV = new SearchCSV();
+                SearchCSV<String[]> searchCSV = new SearchCSVImpl();
                 List<String[]> tempList = new ArrayList<>();
                 tempList = readCSVByLine.reader(String.valueOf(file), 1, 0);
                 WeakReference<List<String[]>> weakReference = new WeakReference<>(tempList);

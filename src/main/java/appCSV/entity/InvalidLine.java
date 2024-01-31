@@ -1,9 +1,8 @@
-package appCSV.Entity;
+package appCSV.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /** Символ запятой (,) имеет десятичный ASCII-код 44.

@@ -4,7 +4,7 @@ import appCSV.ConditionsPredicate;
 
 import java.util.*;
 
-public class SearchCSV0 implements ISearchCSV<String[]> {
+public class SearchCSV0 implements SearchCSV<String[]> {
 
     @Override
     /** list of possible values of flag:

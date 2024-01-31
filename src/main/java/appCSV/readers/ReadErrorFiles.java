@@ -1,6 +1,6 @@
 package appCSV.readers;
 
-import appCSV.Entity.InvalidLine;
+import appCSV.entity.InvalidLine;
 
 import java.io.FileReader;
 import java.io.IOException;

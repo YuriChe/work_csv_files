@@ -1,32 +1,28 @@
 package appCSV;
 
-import appCSV.config.Config;
 import appCSV.names.NameInt;
 import appCSV.readers.ReadCSV_ByLine;
-import appCSV.search.SearchCSV;
+import appCSV.search.SearchCSVImpl;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.*;
 
+import static appCSV.readers.ReadCSV_ByLine.fileFields;
 import static java.util.stream.Collectors.*;
 
 public class App2 {
     public static void main(String[] args) {
 
-        final File dir = new File(Config.path);
-        final File[] files = dir.listFiles();
-        if (files == null) {
-            System.out.println("Нет файлов с данными");
-            return;
-        }
 
         ReadCSV_ByLine readCSVByLine = new ReadCSV_ByLine();
+        File[] files = readCSVByLine.getArrFiles();
         List<String[]> listRows;
 
         listRows = readCSVByLine.reader(String.valueOf(files[0]), 990, 1000);
-        SearchCSV searchCSV = new SearchCSV();
-        searchCSV.fileFields(String.valueOf(files[0]));
+        SearchCSVImpl searchCSVImpl = new SearchCSVImpl();
+
+        fileFields(String.valueOf(files[0]));
         System.out.println(listRows.getClass());
         listRows.forEach(str -> System.out.println(Arrays.toString(str)));
 

@@ -2,8 +2,8 @@ package appCSV;
 
 import appCSV.config.Config;
 import appCSV.readers.ReadCSV_ByLine;
-import appCSV.search.ISearchCSV;
 import appCSV.search.SearchCSV;
+import appCSV.search.SearchCSVImpl;
 
 import java.io.File;
 import java.util.*;
@@ -20,7 +20,7 @@ public class RunAppOne {
         }
 
         long startTime = System.currentTimeMillis();
-        ISearchCSV<String[]> search = new SearchCSV();
+        SearchCSV<String[]> search = new SearchCSVImpl();
         ReadCSV_ByLine readCSVByLine = new ReadCSV_ByLine();
 //        List<String[]> finalResultByOnes = new CopyOnWriteArrayList<>(); //3026 - 362
         List<String[]> finalResultByOnes = new ArrayList<>(); //2928 - 362

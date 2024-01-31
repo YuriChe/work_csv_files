@@ -1,39 +1,18 @@
 package appCSV.search;
 
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
-import com.opencsv.exceptions.CsvValidationException;
+import java.util.Collection;
+import java.util.List;
 
-import java.io.FileReader;
-import java.io.IOException;
+public interface SearchCSV<T>  {
 
-public class SearchCSV extends SearchCSV0 {
+    //формирует выборку согласно условию
+    /** list of possible values of flag:
+     *          < -1 output Set limit by value
+     *          > 0 output List limit by value
+     * DEFAULT  0 - output unlimited List
+     *          -1 - output unlimited Set
+     */
 
-    public boolean fileFields(String file) {
-//        чтение оглавления столбцов
-        try (CSVReader reader = new CSVReaderBuilder(new FileReader(file)).build()) {
-            String[] nextLine = reader.readNext();
-
-            int i = 0;
-            for (String field : nextLine) {
-                System.out.print(i + " " + field);
-                i++;
-                System.out.println();
-            }
-        } catch (IOException | CsvValidationException e) {
-            System.out.println("Ошибка файла при чтении заголовков");
-            return false;
-        }
-        return true;
-    }
-
-    public boolean isNumeric(String str) {
-        // Проверяем, что каждый символ строки является цифрой
-        for (char c : str.toCharArray()) {
-            if (!Character.isDigit(c)) {
-                return false;
-            }
-        }
-        return true;
-    }
+    Collection<T> selectSet(List<T> data, int flag);
+    Collection<T> selectSet(List<T> data);
 }

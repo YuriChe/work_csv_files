@@ -1,5 +1,6 @@
 package appCSV.readers;
 
+import appCSV.config.Config;
 import appCSV.readers.IReadCSV;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
@@ -8,6 +9,7 @@ import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import com.opencsv.validators.RowValidator;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -15,13 +17,38 @@ import java.util.List;
 
 public class ReadCSV_ByLine implements IReadCSV<String[]> {
 
-    public String[] getPreviousLine() {
-        return previousLine;
+    public static long countTotalRows = 0;
+
+    public static boolean fileFields(String file) {
+//        чтение оглавления столбцов
+        try (CSVReader reader = new CSVReaderBuilder(new FileReader(file)).build()) {
+            String[] nextLine = reader.readNext();
+
+            int i = 0;
+            for (String field : nextLine) {
+                System.out.print(i + " " + field);
+                i++;
+                System.out.println();
+            }
+        } catch (IOException | CsvValidationException e) {
+            System.out.println("Ошибка файла при чтении заголовков");
+            return false;
+        }
+        return true;
     }
 
-    private String[] previousLine;
-
-    public static long countTotalRows = 0;
+    public File[] getArrFiles() {
+        try {
+            File dir = new File(Config.path);
+            File[] files = dir.listFiles();
+            if (files == null) {
+                System.out.println("Нет файлов с данными");
+            }
+            return files;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public List<String[]> reader(String file) {
@@ -35,7 +62,8 @@ public class ReadCSV_ByLine implements IReadCSV<String[]> {
         RowValidator rowValidator = new RowValidator() {
             @Override
             public boolean isValid(String[] arrStr) {
-                return arrStr.length == 12;
+//                return arrStr.length == 12;
+                return arrStr.length > 0;
 //          && !arrStr[2].isBlank() && !arrStr[1].isBlank() && arrStr[7].isBlank();
             }
 
@@ -47,7 +75,7 @@ public class ReadCSV_ByLine implements IReadCSV<String[]> {
             }
         };
 
-        LinkedList<String[]> resList = new LinkedList<>();
+        LinkedList<String[]> resultList = new LinkedList<>();
         String[] nextLine;
 
         CSVParser parser = new CSVParserBuilder().build();
@@ -60,7 +88,7 @@ public class ReadCSV_ByLine implements IReadCSV<String[]> {
                     i++;
                     continue;
                 }
-                resList.add(nextLine);
+                resultList.add(nextLine);
 //                previousLine = Arrays.copyOf(nextLine, nextLine.length);
                 i++;
                 if (stop != 0 && stop <= i) {
@@ -75,8 +103,8 @@ public class ReadCSV_ByLine implements IReadCSV<String[]> {
 //            e.printStackTrace(System.err);
         } finally {
             countTotalRows += i;
-            System.out.println(file + " ПРОЧИТАНО " + resList.size() + " операций чтения: " + countTotalRows);
+            System.out.println(file + " ПРОЧИТАНО " + resultList.size() + " операций чтения: " + countTotalRows);
         }
-        return resList;
+        return resultList;
     }
 }
