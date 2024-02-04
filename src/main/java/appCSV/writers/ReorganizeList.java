@@ -3,5 +3,6 @@ package appCSV.writers;
 import java.util.List;
 
 public interface ReorganizeList<T> {
-    public List<T> toUniqueList(List<T> list);
+    List<T> toUniqueList (List<T> list);
+    List<String[]> toArrStringForFile (List<T> list);
 }

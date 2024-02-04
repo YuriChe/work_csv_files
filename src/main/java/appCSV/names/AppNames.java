@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class AppNames {
     public static void main(String[] args) throws IOException {
-        final File dir = new File(Config.path);
+        final File dir = new File(Config.PATH);
         final File[] files = dir.listFiles();
         if (files == null) {
             System.out.println("Нет файлов с данными");

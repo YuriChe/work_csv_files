@@ -8,13 +8,13 @@ import java.util.List;
 
 public class AppReadError {
     public static void main(String[] args) {
-        final File dir = new File(Config.path);
+        final File dir = new File(Config.PATH);
         final File[] files = dir.listFiles();
         if (files == null) {
             throw new RuntimeException("Нет файлов с данными");
         }
 
-        ReadErrorFiles readErrorFiles = new ReadErrorFiles();
+        ReadErrorFiles readErrorFiles = new ReadErrorFiles(0);
 //        for (File file : files) {
             List<String> listRes = readErrorFiles.reader(String.valueOf(files[1]));
 

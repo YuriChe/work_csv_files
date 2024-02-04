@@ -8,8 +8,11 @@ import java.util.Objects;
 @Table(name = "wb_customers", schema = "wb")
 public class CustomerWB {
 
-    //    @GeneratedValue (strategy = GenerationType.AUTO)
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    private int id;
+
     @Column(name = "id_wb")
     private int id_wb;
 
@@ -44,10 +47,10 @@ public class CustomerWB {
     /*@Column (name = "wb_seq_pn_count")
     @Deprecated
     private String wb_seq_pn_count;*/
-
     /*@Column (name = "wb_seq_pn_geo_count")
     @Deprecated
     private String wb_seq_pn_geo_count;*/
+
     public CustomerWB() {
     }
 
@@ -59,24 +62,19 @@ public class CustomerWB {
                 ", name='" + name + '\'' +
                 ", comment='" + comment + '\'' +
                 ", email='" + email + '\'' +
-                ", wb_lat='" + wb_lat + '\'' +
-                ", wb_lon='" + wb_lon + '\'' +
+//                ", wb_lat='" + wb_lat + '\'' +
+//                ", wb_lon='" + wb_lon + '\'' +
                 ", address='" + address + '\'' +
                 ", geohash='" + geohash + '\'' +
                 '}';
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CustomerWB customerWB = (CustomerWB) o;
-        return Objects.equals(getId_wb(), customerWB.getId_wb());
+    public int getId() {
+        return id;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId_wb());
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getId_wb() {
@@ -149,5 +147,18 @@ public class CustomerWB {
 
     public void setGeohash(String geohash) {
         this.geohash = geohash;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CustomerWB that = (CustomerWB) o;
+        return Objects.equals(getPhone_number(), that.getPhone_number()) && Objects.equals(getName(), that.getName()) && Objects.equals(getGeohash(), that.getGeohash());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getPhone_number(), getName(), getGeohash());
     }
 }

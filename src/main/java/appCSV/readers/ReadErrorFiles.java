@@ -14,18 +14,9 @@ public class ReadErrorFiles implements IReadCSV<String> {
         this.skipLines = skipLines;
     }
 
-    public ReadErrorFiles() {
-    }
-
-    public List<Integer> strToArrInt(String str) {
-
-        return null;
-    }
-
     private boolean isValidUnicodeCodePoint(int codePoint) {
         return codePoint >= 0x0000 && codePoint <= 0x10FFFF;
     }
-
 
     public boolean validate(List<Integer> stringByInt) {
         /*List<Integer> check = new ArrayList<>(List.of(new Integer[]{10, 13}));
@@ -61,8 +52,7 @@ public class ReadErrorFiles implements IReadCSV<String> {
         return true;
     }
 
-    public int skipLines = 0;
-
+    public int skipLines;
 
     //    Читает строку до сочетания переноса строки 1310. эти символы в массив не добавляет
     @Override
@@ -70,11 +60,11 @@ public class ReadErrorFiles implements IReadCSV<String> {
 
         List<String> listCorrectRead = new ArrayList<>();
 
-        long beginLine = 0;
-        long endLine = 0;
+        long beginLine;
+        long endLine;
         long countSymbols = 0;
         long countLines = 0;
-        int symbol = 0;
+        int symbol;
         int flag = 0;
 
         try (FileReader fileReader = new FileReader(file)) {

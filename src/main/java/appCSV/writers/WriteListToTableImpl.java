@@ -1,6 +1,5 @@
 package appCSV.writers;
 
-import appCSV.config.HibernateConfig;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -16,53 +15,39 @@ public class WriteListToTableImpl<T> implements WriteListToTable<T> {
         this.sessionFactory = sessionFactory;
     }
 
-    //    записывает в таблицу postresql List<T> c с индекса begin до end включительно
     @Override
     public int writeListToTable(List<T> customerList, int begin, int end) {
-
-        //    SessionFactory sessionFactory = new HibernateConfig().getSession.buildSessionFactory();
-
-        if (end <= 0) {
+//    записывает в таблицу postresql List<T> c с индекса begin до end включительно
+        if (end <= 0) { // значит все
             end = customerList.size();
         }
-        // Создание сессии
         Session session = sessionFactory.openSession();
         int countPersist = 0;
         int countRecords = 0;
+        Transaction transaction = session.beginTransaction();
+
         try {
-            Transaction transaction = session.beginTransaction();
-
-            // Ваши операции с базой данных, например, сохранение объекта
-            try {
-
-                ListIterator<T> iterator = customerList.listIterator();
-                T customer;
-                while (iterator.hasNext() && countRecords <= end) {
-                    countRecords++;
-                    if (countRecords >= begin) {
-                        customer = iterator.next();
-                        session.persist(customer);
-                        countPersist++;
-                    }
+            ListIterator<T> iterator = customerList.listIterator();
+            T customer;
+            while (iterator.hasNext() && countRecords <= end) {
+                countRecords++;
+                if (countRecords >= begin) {
+                    customer = iterator.next();
+                    session.persist(customer);
+                    countPersist++;
                 }
-//                System.out.println(transaction.getStatus());
-//                System.out.println(transaction.isActive());
-                transaction.commit();
-
-
-            } catch (Exception e) {
-                if (transaction != null) {
-                    transaction.rollback();
-                }
-                e.printStackTrace();
-                return -1;
             }
+            transaction.commit();
 
         } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
             e.printStackTrace();
             return -1;
+
         } finally {
-            if (session != null && session.isOpen()) {
+            if (session.isOpen()) {
                 session.close();
             }
         }

@@ -14,7 +14,7 @@ public class RunAppSemaphore {
 
     public static void main(String[] args) {
 
-        final File dir = new File(Config.path);
+        final File dir = new File(Config.PATH);
         final File[] files = dir.listFiles();
         if (files == null) {
             System.out.println("Нет файлов с данными");

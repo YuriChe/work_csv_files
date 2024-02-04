@@ -5,18 +5,13 @@ import appCSV.config.Config;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class RunAppThread {
 
 
     public static void main(String[] args) {
 
-        final File dir = new File(Config.path);
+        final File dir = new File(Config.PATH);
         final File[] files = dir.listFiles();
         if (files == null) {
             System.out.println("Нет файлов с данными");

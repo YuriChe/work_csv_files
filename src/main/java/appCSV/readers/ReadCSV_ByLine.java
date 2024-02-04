@@ -1,7 +1,6 @@
 package appCSV.readers;
 
 import appCSV.config.Config;
-import appCSV.readers.IReadCSV;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
@@ -39,7 +38,7 @@ public class ReadCSV_ByLine implements IReadCSV<String[]> {
 
     public File[] getArrFiles() {
         try {
-            File dir = new File(Config.path);
+            File dir = new File(Config.PATH);
             File[] files = dir.listFiles();
             if (files == null) {
                 System.out.println("Нет файлов с данными");
