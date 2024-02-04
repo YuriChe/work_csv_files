@@ -17,6 +17,7 @@ public class AppReadFilesToTable {
 
     public static void main(String[] args) {
         Config config = new Config();
+        int totalDBRecords = 0;
         ReorganizeList<CustomerWB> reorganizeList = new ReorganizeListImpl();
         SessionFactory sessionFactory = HibernateConfig.getSession().getSessionFactory();
 
@@ -36,9 +37,10 @@ public class AppReadFilesToTable {
 //            запись в базу списка
             int countRecords = write.writeListToTable(listCustomersOne, 0, -1);
             if (countRecords == -1) {
-                System.err.println(" Записей не произведено! ");
+                System.err.println("No data has been recorded!");
             }
-            System.out.println(" Передано в БД " + countRecords);
+            totalDBRecords += countRecords;
+            System.out.println("Send records from current file: " + countRecords + ", total send entity: " + totalDBRecords);
         }
 
         sessionFactory.close();

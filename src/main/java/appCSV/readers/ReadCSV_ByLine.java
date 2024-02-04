@@ -76,7 +76,7 @@ public class ReadCSV_ByLine implements IReadCSV<String[]> {
 
         LinkedList<String[]> resultList = new LinkedList<>();
         String[] nextLine;
-
+        ReadErrorFilesByLines readErrorFilesByLines = new ReadErrorFilesByLines();
         CSVParser parser = new CSVParserBuilder().build();
         try (CSVReader reader = new CSVReaderBuilder(new FileReader(file)).withCSVParser(parser).build()) {
             while ((nextLine = reader.readNext()) != null) {
@@ -95,11 +95,14 @@ public class ReadCSV_ByLine implements IReadCSV<String[]> {
                 }
             }
         } catch (CsvValidationException e) {
+            resultList.clear();
+            resultList = readErrorFilesByLines.reader(file);
             System.err.println(e.getMessage() + " " + i);
         } catch (IOException e) {
-            System.err.println("!!! Ошибка файла " + file + " " + e.getMessage());
-//            System.out.println(Arrays.toString(nextLine));
-//            e.printStackTrace(System.err);
+            System.err.println("Ошибка, чтение в режиме error файла: " + file + " " + e.getMessage());
+            resultList.clear();
+            resultList = readErrorFilesByLines.reader(file);
+            i = readErrorFilesByLines.count;
         } finally {
             countTotalRows += i;
             System.out.println(file + " ПРОЧИТАНО " + resultList.size() + " операций чтения: " + countTotalRows);

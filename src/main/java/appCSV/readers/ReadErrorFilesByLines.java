@@ -12,16 +12,16 @@ import java.util.stream.Stream;
 public class ReadErrorFilesByLines extends ReadCSV_ByLine {
     public String errorCode; // строка выдачи в файл ошибок
     public AtomicInteger counter;
+    public int count = 0;
 
     @Override
-    public List<String[]> reader(String file) {
+    public LinkedList<String[]> reader(String file) {
 
         errorCode = "{File=" + file + "}\n" +
                 "{Errors: \n}";
         /**
          * чтение из файла построчно в список List<String>, кроме первой строки
          */
-        AtomicInteger counter;
         List<String> listLines;
         try (Stream<String> streamLines = Files.lines(Path.of(file))) {
             counter = new AtomicInteger(0);
@@ -35,47 +35,8 @@ public class ReadErrorFilesByLines extends ReadCSV_ByLine {
 
         System.out.println("Первая фаза чтения из файла завершена. Элементов =" + listLines.size());
 
-        List<String[]> listResult = listItemProcessing(listLines);
+        LinkedList<String[]> listResult = listItemProcessing(listLines);
 
-            /*listResult.parallelStream()
-                    .filter(e -> e.length < 11)
-                    .forEach(e -> System.out.println(Arrays.toString(e)));*/
-
-            /*while ((line = bufferedReader.readLine()) != null) {
-                countLines++;
-                if (countLines % 10000 == 0) System.out.println("Прочитано " + counter * 100 / 100000 + "%");
-                elLine = line.split(",");
-                if (elLine.length != lenghtArr) {
-                    errorCode = errorCode.concat("{SizeArray=" + elLine.length +
-                            ", previous=" + lenghtArr
-                            + ", Error line=" + countLines
-                            + ", string=" + line + "\n");
-                    continue;
-                }
-                lenghtArr = elLine.length;
-                for (int i = 0; i < elLine.length; i++) {
-                    str = new StringBuilder(elLine[i]);
-                    if (str.isEmpty() || line.isEmpty() || str.length() == 0) {
-                        errorCode = errorCode.concat("{Empty. Error line=" + counter + ", string=" + line + "\n");
-                        continue;
-                    }
-//  ищет двойные кавычки с боков и если есть, то удаляет
-                    int x, y;
-                    if (str.indexOf("\"") != -1) {
-                        x = 0;
-                        y = 0;
-                        if ((x = str.indexOf("\"")) == 0 && (y = str.lastIndexOf("\"")) == str.length() - 1 && x != y) {
-                            System.out.println(str + "\n" + "ЭТО ГДЕ ОШИБКА");
-                            str.deleteCharAt(x);
-                            str.deleteCharAt(y - 1);
-                        } else {
-                            errorCode = errorCode.concat("{Quotes. Error line=" + counter + ", string=" + line + "\n");
-                            continue;
-                        }
-                    }
-                    listResult.add(elLine);
-                }
-            }*/
 
         WriteToFile writeToFile = new WriteToFile();
         errorCode = errorCode +
@@ -92,60 +53,105 @@ public class ReadErrorFilesByLines extends ReadCSV_ByLine {
      *
      * @return список из String[]
      */
-    public List<String[]> listItemProcessing(List<String> listLines) {
-        List<String[]> listResult = new ArrayList<>(100000);
-        outloop:
+    public LinkedList<String[]> listItemProcessing(List<String> listLines) {
+        LinkedList<String[]> listResult = new LinkedList<>();
         for (String stringLineOriginal : listLines) {
+            count++;
             StringBuilder stringLine = new StringBuilder(stringLineOriginal);
-            int begin, end;
-            String strAddress = "";
-            String strWithoutQuotes = "";
-            while ((begin = stringLine.indexOf("\"")) != -1) {
-                end = stringLine.toString().lastIndexOf("\"");
+
+            String[] arrStringElementsTemp = new String[12];
+
+            if (!isValidQuotesLine(stringLine, arrStringElementsTemp, count, stringLineOriginal)) {
+                continue;
+            }
+
+            String[] strArr = stringLine.toString().split(",");
+
+            for (int i = 0; i < 12; i++) {
+                if (i < 7) {
+                    if (i < strArr.length) {
+                        arrStringElementsTemp[i] = strArr[i];
+                    } else {
+                        arrStringElementsTemp[i] = "";
+                    }
+                }
+                if (i == 7) {
+                    continue;
+                }
+                if (i > 7) {
+                    if (i < strArr.length) {
+                        arrStringElementsTemp[i] = strArr[i - 1];
+                    } else {
+                        arrStringElementsTemp[i] = "";
+                    }
+                }
+            }
+            listResult.add(arrStringElementsTemp);
+        }
+        System.out.println("Вторая фаза завершена. Элементов =" + listResult.size());
+        return listResult;
+    }
+
+    public boolean isValidQuotesLine(StringBuilder stringLine, String[] resArr, int count, String stringLineOriginal) {
+        int begin, end;
+        int index = 0;
+        while ((index = stringLine.indexOf("\"\"", index)) != -1) {
+            stringLine.replace(index, index + 2, "^");
+            index++;
+        }
+        if ((end = stringLine.toString().lastIndexOf("\"")) != -1) {
+            if ((begin = stringLine.toString().substring(0, end - 1).lastIndexOf("\"")) != -1) {
                 if (begin != end) {
                     if (begin != 0) {
                         if (stringLine.charAt(begin - 1) != ',') {
-                            errorCode = errorCode.concat("{Invalid quotes without comma. Error line=" + counter + ", string=" + stringLine + "}\n");
-                            break;
+                            errorCode = errorCode.concat("{Invalid quotes without comma. Error line=" + count + ", string=" + stringLineOriginal + "}\n");
+                            return false;
                         }
                     }
                     if (end != stringLine.length() - 1) {
                         if (stringLine.charAt(end + 1) != ',') {
-                            errorCode = errorCode.concat("{Invalid quotes without comma. Error line=" + counter + ", string=" + stringLine + "}\n");
-                            break;
+                            errorCode = errorCode.concat("{Invalid quotes without comma. Error line=" + count + ", string=" + stringLineOriginal + "}\n");
+                            return false;
                         }
                     }
-                    strAddress = stringLine.substring(begin + 1, end);
-                    stringLine.delete(begin, end + 1);
+                    /**
+                     * запись в 8-й элемент адреса
+                     */
 
-                    strWithoutQuotes = new String(stringLine);
-                    strWithoutQuotes = strWithoutQuotes.replace(",,", ",");
+                    resArr[7] = stringLine.substring(begin + 1, end);
+
+                    /**
+                     *  удаление субстроки обрамленной кавычками
+                     */
+                    if (begin == 0) {
+                        if (end >= stringLine.length() - 1) {
+                            stringLine.delete(begin, end);
+                        } else {
+                            stringLine.delete(begin, end + 1);
+                        }
+                    } else {
+                        stringLine.delete(begin - 1, end + 1);
+                    }
+                    while ((index = stringLine.indexOf("\"", index)) != -1) {
+                        stringLine.replace(index, index + 1, "");
+                        index++;
+                    }
+
                 } else {
-                    errorCode = errorCode.concat("{Empty quotes. Error line=" + counter + ", string=" + stringLine + "}\n");
-                    break;
+                    errorCode = errorCode.concat("{Empty quotes. Error line=" + count + ", string=" + stringLineOriginal + "}\n");
+                    return false;
                 }
 
+            } else {
+                errorCode = errorCode.concat("{Unpaired quotation. Error line=" + count + ", string=" + stringLineOriginal + "}\n");
+                return false;
             }
-            String[] strArr = strWithoutQuotes.split(",");
-            if (strArr.length < 11) {
-                errorCode = errorCode.concat("{Quantity elements . Error line=" + counter + ", string=" + stringLine + "}\n");
-                continue;
-            }
-            String[] strArrRes = new String[12];
-            for (int i = 0; i < 12; i++) {
-                if (i < 7) {
-                    strArrRes[i] = strArr[i];
-                }
-                if (i == 7) {
-                    strArrRes[7] = strAddress;
-                }
-                if (i > 7) {
-                    strArrRes[i] = strArr[i - 1];
-                }
-            }
-            listResult.add(strArrRes);
         }
-        System.out.println("Вторая фаза завершена. Элементов =" + listResult.size());
-        return listResult;
+        /*if (strArr.length < 11) {
+            errorCode = errorCode.concat("{Quantity elements . Error line=" + count + ", string=" + stringLineOriginal + "}\n");
+            return false;
+        }*/
+
+        return true;
     }
 }
