@@ -16,14 +16,14 @@ public class WriteListToTableImpl<T> implements WriteListToTable<T> {
     }
 
     @Override
-    public int writeListToTable(List<T> customerList, int begin, int end) {
+    public long writeListToTable(List<T> customerList, int begin, int end) {
 //    записывает в таблицу postresql List<T> c с индекса begin до end включительно
         if (end <= 0) { // значит все
             end = customerList.size();
         }
         Session session = sessionFactory.openSession();
-        int countPersist = 0;
-        int countRecords = 0;
+        long countPersist = 0;
+        long countRecords = 0;
         Transaction transaction = session.beginTransaction();
 
         try {
@@ -54,7 +54,7 @@ public class WriteListToTableImpl<T> implements WriteListToTable<T> {
         return countPersist;
     }
 
-    public int writeListToTable(List<T> customerList) {
+    public long writeListToTable(List<T> customerList) {
         return writeListToTable(customerList, 0, 0);
     }
 }

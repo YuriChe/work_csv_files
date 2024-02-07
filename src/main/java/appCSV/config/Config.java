@@ -8,12 +8,14 @@ public final class Config {
     private static final String CONFIG_FILE = "config.properties";
 
     private static String currentStreets;
-    public static String CITY;
-    public static boolean DEBUG;
-    public static String PATH;
-    public static String RESULT_PATH;
-    public static String PATH_QUERY;
-    public static String PATH_ERROR_FILES;
+    public static String city;
+    public static boolean debug;
+    public static String path;
+    public static String resultPath;
+    public static String pathQueryToSave;
+    public static String pathErrorFiles;
+    public static boolean isDeleteFirstLine;
+
 
     public static String getCurrentStreets() {
         return currentStreets;
@@ -31,12 +33,13 @@ public final class Config {
             }
             properties.load(input);
 
-            DEBUG = properties.getProperty("debug", "false").equals("true");
-            RESULT_PATH = properties.getProperty("path.result", "\\Users\\Public\\RES_JAVA\\");
-            PATH = properties.getProperty("path.csv");
-            PATH_QUERY = properties.getProperty("path.query");
-            PATH_ERROR_FILES = properties.getProperty("path.wb_errors");
+            debug = properties.getProperty("debug", "false").equals("true");
+            resultPath = properties.getProperty("path.result", "\\Users\\Public\\RES_JAVA\\");
+            path = properties.getProperty("path.csv");
+            pathQueryToSave = properties.getProperty("path.query");
+            pathErrorFiles = properties.getProperty("path.wb_errors");
             currentStreets = loadQueries();
+            isDeleteFirstLine = properties.getProperty("column.titles", "true").equals("true");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -44,9 +47,9 @@ public final class Config {
 
     private String loadQueries() {
         StringBuilder streets = new StringBuilder();
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(PATH_QUERY))) {
-            if ((CITY = bufferedReader.readLine()) != null) {
-                CITY = CITY.replace(",", "").toUpperCase().strip();
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(pathQueryToSave))) {
+            if ((city = bufferedReader.readLine()) != null) {
+                city = city.replace(",", "").toUpperCase().strip();
             } else {
                 throw new NullPointerException("Отсутствует указание региона в файле запроса query№№.txt");
             }

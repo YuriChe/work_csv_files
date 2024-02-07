@@ -26,8 +26,8 @@ public class AppCullFromTable {
         GetListCustomerFromDBImpl getListCustomerFromDB = new GetListCustomerFromDBImpl();
 
         List<String> listStreets = trimSplitStreets(getCurrentStreets()); // формирование пула улиц для выборки
-        if (DEBUG) {
-            System.out.println(CITY);
+        if (debug) {
+            System.out.println(city);
             listStreets.forEach(System.out::println);
         }
 
@@ -37,7 +37,7 @@ public class AppCullFromTable {
         int i = 1;
         for (String address : listStreets) {
 
-            String hqlAddress = "%" + CITY + "%" + address + "%";
+            String hqlAddress = "%" + city + "%" + address + "%";
 
             getListCustomerFromDB.setAddress(hqlAddress);
 
@@ -51,7 +51,7 @@ public class AppCullFromTable {
                 .distinct()
                 .toList();
 
-        if (DEBUG) { // вывод примера результата
+        if (debug) { // вывод примера результата
             listResult.stream()
                     .limit(20)
                     .forEach(System.out::println);
@@ -61,7 +61,7 @@ public class AppCullFromTable {
         WriteToFile writeToFile = new WriteToFile();
         String strToTXT =
                 "{DB=" + "wb_customers" + "}\n" +
-                        "{Region=}" + CITY +
+                        "{Region=}" + city +
                         "{Query=" + getCurrentStreets().toLowerCase() + "}\n" +
                         "{Records=" + listResultUnique.size() + "}\n";
 

@@ -11,6 +11,6 @@ public interface WriteListToTable<T>{
      * @param end
      * @return
      */
-    int writeListToTable(List<T> list, int begin, int end);
+    long writeListToTable(List<T> list, int begin, int end);
 
 }

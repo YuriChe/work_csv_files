@@ -1,21 +1,26 @@
 package appCSV.readers;
 
 import appCSV.writers.WriteToFile;
+import com.opencsv.exceptions.CsvException;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
-public class ReadErrorFilesByLines extends ReadCSV_ByLine {
+import static appCSV.config.Config.debug;
+import static appCSV.config.Config.isDeleteFirstLine;
+
+public class ReadErrorFilesByLines implements ReadCSV<String[]> {
     public String errorCode; // строка выдачи в файл ошибок
-    public AtomicInteger counter;
-    public int count = 0;
+    public AtomicLong counter;
+
 
     @Override
-    public LinkedList<String[]> reader(String file) {
+    public long readFile(File file, List<String[]> resultList) throws CsvException {
 
         errorCode = "{File=" + file + "}\n" +
                 "{Errors: \n}";
@@ -23,28 +28,32 @@ public class ReadErrorFilesByLines extends ReadCSV_ByLine {
          * чтение из файла построчно в список List<String>, кроме первой строки
          */
         List<String> listLines;
-        try (Stream<String> streamLines = Files.lines(Path.of(file))) {
-            counter = new AtomicInteger(0);
+        try (Stream<String> streamLines = Files.lines(file.toPath())) {
+            counter = new AtomicLong(0);
+            int skip = 0;
+            if (isDeleteFirstLine) {
+                skip = 1;
+            }
             listLines = streamLines
                     .peek(line -> counter.incrementAndGet())
-                    .skip(1)
+                    .skip(skip)
                     .toList();
         } catch (IOException ex) {
             throw new RuntimeException("Error reading file: " + file, ex);
         }
-
-        System.out.println("Первая фаза чтения из файла завершена. Элементов =" + listLines.size());
-
-        LinkedList<String[]> listResult = listItemProcessing(listLines);
+        if (debug) {
+            System.out.println("Первая фаза чтения из файла завершена. Элементов =" + listLines.size());
+        }
+        resultList.addAll(listItemProcessing(listLines));
 
 
         WriteToFile writeToFile = new WriteToFile();
         errorCode = errorCode +
                 "{Item read count=" + counter + "}" +
-                "{List item count =" + listResult.size() + "}\n";
+                "{List item count =" + resultList.size() + "}\n";
 
-        writeToFile.writeDataToFile(listResult, errorCode);
-        return listResult;
+        writeToFile.writeDataToFile(resultList, errorCode);
+        return counter.get();
     }
 
     /**
@@ -55,13 +64,14 @@ public class ReadErrorFilesByLines extends ReadCSV_ByLine {
      */
     public LinkedList<String[]> listItemProcessing(List<String> listLines) {
         LinkedList<String[]> listResult = new LinkedList<>();
+        int countLines = 0;
         for (String stringLineOriginal : listLines) {
-            count++;
+            countLines++;
             StringBuilder stringLine = new StringBuilder(stringLineOriginal);
 
             String[] arrStringElementsTemp = new String[12];
 
-            if (!isValidQuotesLine(stringLine, arrStringElementsTemp, count, stringLineOriginal)) {
+            if (!isValidQuotesLine(stringLine, arrStringElementsTemp, countLines, stringLineOriginal)) {
                 continue;
             }
 
@@ -151,7 +161,6 @@ public class ReadErrorFilesByLines extends ReadCSV_ByLine {
             errorCode = errorCode.concat("{Quantity elements . Error line=" + count + ", string=" + stringLineOriginal + "}\n");
             return false;
         }*/
-
         return true;
     }
 }

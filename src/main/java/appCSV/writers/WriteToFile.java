@@ -25,8 +25,8 @@ public class WriteToFile {
         String day = String.valueOf(currentDate.getDayOfMonth());
         try {
             for (int meter = 1; true; meter++) {
-                String fileDataResToStr = config.RESULT_PATH + "res_" + month + day + "_" + meter + ".csv";
-                String fileTxtToStr = config.RESULT_PATH + "query_" + month  + day + "_" + meter + ".txt";
+                String fileDataResToStr = config.resultPath + "res_" + month + day + "_" + meter + ".csv";
+                String fileTxtToStr = config.resultPath + "query_" + month  + day + "_" + meter + ".txt";
                 fileTo = Paths.get(fileDataResToStr);
                 fileToQuery = Paths.get(fileTxtToStr);
 

@@ -5,65 +5,30 @@ import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
+import com.opencsv.exceptions.CsvException;
+import com.opencsv.exceptions.CsvMalformedLineException;
 import com.opencsv.exceptions.CsvValidationException;
 import com.opencsv.validators.RowValidator;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 
-public class ReadCSV_ByLine implements IReadCSV<String[]> {
+import static appCSV.config.Config.isDeleteFirstLine;
 
-    public static long countTotalRows = 0;
+public class ReadCSV_ByLine implements ReadCSV<String[]> {
 
-    public static boolean fileFields(String file) {
-//        чтение оглавления столбцов
-        try (CSVReader reader = new CSVReaderBuilder(new FileReader(file)).build()) {
-            String[] nextLine = reader.readNext();
-
-            int i = 0;
-            for (String field : nextLine) {
-                System.out.print(i + " " + field);
-                i++;
-                System.out.println();
-            }
-        } catch (IOException | CsvValidationException e) {
-            System.out.println("Ошибка файла при чтении заголовков");
-            return false;
-        }
-        return true;
-    }
-
-    public File[] getArrFiles() {
-        try {
-            File dir = new File(Config.PATH);
-            File[] files = dir.listFiles();
-            if (files == null) {
-                System.out.println("Нет файлов с данными");
-            }
-            return files;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public List<String[]> reader(String file) {
-        return reader(file, 0, 0);
-    }
-
-    public List<String[]> reader(String file, int skip, int stop) {
+    public long readerFileByLine(File file, List<String[]> resultList, int skip, int stop) throws CsvException {
 
         long i = 0;
 
-        RowValidator rowValidator = new RowValidator() {
+        /*RowValidator rowValidator = new RowValidator() {
             @Override
             public boolean isValid(String[] arrStr) {
 //                return arrStr.length == 12;
-                return arrStr.length > 0;
-//          && !arrStr[2].isBlank() && !arrStr[1].isBlank() && arrStr[7].isBlank();
+                return arrStr.length > 0
+                        && !arrStr[2].isBlank() && !arrStr[1].isBlank() && arrStr[7].isBlank();
             }
 
             @Override
@@ -72,17 +37,17 @@ public class ReadCSV_ByLine implements IReadCSV<String[]> {
                     throw new CsvValidationException("Строка с ошибкой, счетчик =");
                 }
             }
-        };
+        };*/
 
-        LinkedList<String[]> resultList = new LinkedList<>();
         String[] nextLine;
-        ReadErrorFilesByLines readErrorFilesByLines = new ReadErrorFilesByLines();
         CSVParser parser = new CSVParserBuilder().build();
         try (CSVReader reader = new CSVReaderBuilder(new FileReader(file)).withCSVParser(parser).build()) {
             while ((nextLine = reader.readNext()) != null) {
 
-                rowValidator.validate(nextLine);
-
+//                rowValidator.validate(nextLine);
+                if (isDeleteFirstLine && skip < 1) {
+                    skip = 1;
+                }
                 if (i <= skip) {
                     i++;
                     continue;
@@ -94,19 +59,21 @@ public class ReadCSV_ByLine implements IReadCSV<String[]> {
                     break;
                 }
             }
-        } catch (CsvValidationException e) {
-            resultList.clear();
-            resultList = readErrorFilesByLines.reader(file);
-            System.err.println(e.getMessage() + " " + i);
+        } catch (CsvMalformedLineException | CsvException e) {
+            throw new CsvException();
+
         } catch (IOException e) {
-            System.err.println("Ошибка, чтение в режиме error файла: " + file + " " + e.getMessage());
-            resultList.clear();
-            resultList = readErrorFilesByLines.reader(file);
-            i = readErrorFilesByLines.count;
+            throw new RuntimeException();
+
         } finally {
-            countTotalRows += i;
-            System.out.println(file + " ПРОЧИТАНО " + resultList.size() + " операций чтения: " + countTotalRows);
+            System.out.println("Read file: " + file);
+            System.out.println("Reading operations: " + i + ", list entries: " + resultList.size());
         }
-        return resultList;
+        return i;
+    }
+
+    @Override
+    public long readFile(File file, List<String[]> resultList) throws CsvException {
+        return readerFileByLine(file, resultList, 0, 0);
     }
 }
