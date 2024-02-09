@@ -13,19 +13,19 @@ public class CustomerWB {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "id_wb")
+    @Column(name = "wb_id")
     private int id_wb;
 
     @Column(name = "phone_number", nullable = false)
     private String phone_number;
 
-    @Column(name = "wb_name", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "wb_comment")
+    @Column(name = "comment")
     private String comment;
 
-    @Column(name = "wb_email")
+    @Column(name = "email")
     private String email;
 
     @Column(name = "wb_lat")
@@ -34,10 +34,10 @@ public class CustomerWB {
     @Column(name = "wb_lon")
     private String wb_lon;
 
-    @Column(name = "wb_address", nullable = false)
+    @Column(name = "address", nullable = false)
     private String address;
 
-    @Column(name = "wb_geohash")
+    @Column(name = "geohash")
     private String geohash;
 
     /*@Column (name = "old_id")

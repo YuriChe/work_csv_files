@@ -10,29 +10,26 @@ import com.opencsv.exceptions.CsvException;
 import org.hibernate.SessionFactory;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class AppReadFilesToTable {
 
     public static void main(String[] args) throws CsvException {
 
-        Config config = new Config();
+        final Config config = new Config();
 
-        ReadCSV<String[]> readCSV = new ReadCSV_All();
-        ReadCSV<String[]> readCSVByLine = new ReadCSV_ByLine();
+        ReadCSV<String[]> readCSV = new ReadCSV_All();// читает весь файл через framework openCVS
+        ReadCSV<String[]> readCSVByLine = new ReadCSV_ByLine();// читает построчно через framework openCVS
+        ReadCSV<String[]> readErrorCSV = new ReadErrorFilesByLines(); // читает построчно свой код
 
-        ReadCSV<String[]> readErrorCSV = new ReadErrorFilesByLines();
-        HashMap<File, DataRecord> dataRecords = new HashMap<>();// учет сколько прочитано
+        HashMap<File, DataRecord> dataRecords = new HashMap<>();// output деталей чтения
 
-        ReadingCSV<String[]> readingCSV = new ReadingCSV<>(readErrorCSV);// контроллер чтения из файла
-
+        ReadingCSV<String[]> readingCSV = new ReadingCSV<>(readErrorCSV);// контроллер reader из файла
 
 //        ReorganizeList<CustomerWB> reorganizeList = new ReorganizeListImpl();
 
-        List<String[]> listFromFile = new LinkedList<>();
-        List<CustomerWB> listCustomerWB = new LinkedList<>();
+        List<String[]> listFromFile = new ArrayList<>();
+        List<CustomerWB> listCustomerWB = new ArrayList<>();
 
         EnrollEntity enrollEntity = new EnrollEntity();
 
@@ -50,6 +47,7 @@ public class AppReadFilesToTable {
 
             try {
                 counterRead = readingCSV.read(file, listFromFile);// читает файл в список
+//                listFromFile.stream().flatMap(Arrays::stream).forEach(System.out::println);
                 record.setCounterRowsFile(counterRead);
                 record.setMethodReading(readingCSV.getReader().getClass().getName());
 
@@ -77,11 +75,10 @@ public class AppReadFilesToTable {
         }
 
         if (config.debug) {
-            dataRecords.entrySet()
-                    .forEach(e -> System.out.println("file=" + e.getKey() +
-                            ", rows=" + e.getValue().getCounterRowsFile() +
-                            ", dbRecods=" + e.getValue().getCounterDBRecords() +
-                            ", methodreading=" + e.getValue().getMethodReading()));
+            dataRecords.forEach((key, value) -> System.out.println("file=" + key +
+                    ", rows=" + value.getCounterRowsFile() +
+                    ", dbRecods=" + value.getCounterDBRecords() +
+                    ", methodreading=" + value.getMethodReading()));
         }
 
         sessionFactory.close();

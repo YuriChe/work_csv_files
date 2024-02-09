@@ -18,7 +18,9 @@ import static appCSV.writers.ReorganizeListImpl.trimSplitStreets;
 
 public class AppCullFromTable {
     public static void main(String[] args) {
+
         Config config = new Config();
+
         SessionFactory sessionFactory = HibernateConfig.getSession().getSessionFactory();
 
         ReorganizeList<CustomerWB> reorganizeList = new ReorganizeListImpl();
@@ -26,11 +28,11 @@ public class AppCullFromTable {
         GetListCustomerFromDBImpl getListCustomerFromDB = new GetListCustomerFromDBImpl();
 
         List<String> listStreets = trimSplitStreets(getCurrentStreets()); // формирование пула улиц для выборки
+
         if (debug) {
             System.out.println(city);
             listStreets.forEach(System.out::println);
         }
-
 
         // поиск и выборка в итоговый лист результата по всем
         List<CustomerWB> listResult = new ArrayList<>();

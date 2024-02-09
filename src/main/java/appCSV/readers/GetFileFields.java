@@ -4,6 +4,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -13,7 +14,7 @@ public class GetFileFields {
      * @param file
      * @return массив строк с оглавлениями
      */
-    public static String[] fileFields(String file) {
+    public static String[] fileFields(File file) {
         String[] nextLine;
 //
         try (CSVReader reader = new CSVReaderBuilder(new FileReader(file)).build()) {

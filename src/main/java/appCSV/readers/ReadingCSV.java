@@ -7,6 +7,8 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
+import static appCSV.config.Config.debug;
+
 public class ReadingCSV<T> {
 
     public ReadCSV<T> getReader() {
@@ -31,7 +33,6 @@ public class ReadingCSV<T> {
      * @throws CsvException
      */
     public long read(File file, List<T> resultList) throws CsvException {
-        Config config = new Config();
         long countRead = 0;
 
         if (reader != null) {
@@ -40,8 +41,8 @@ public class ReadingCSV<T> {
 
                 countRead += reader.readFile(file, listRead);
 
-                if (config.debug) {
-                    GetFileFields.fileFields(file.getPath());
+                if (debug) {
+                    GetFileFields.fileFields(file);
                     resultList.stream().limit(10).forEach(System.out::println);
                     System.out.println("Количество полей в списке " + listRead.size());
                 }

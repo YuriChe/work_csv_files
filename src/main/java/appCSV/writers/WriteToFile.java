@@ -1,6 +1,5 @@
 package appCSV.writers;
 
-import appCSV.config.Config;
 import com.opencsv.CSVWriter;
 
 import java.io.FileWriter;
@@ -12,12 +11,13 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.Collection;
 
+import static appCSV.config.Config.resultPath;
+
 public class WriteToFile {
     private Path fileTo;
     private Path fileToQuery;
 
     public Path writeDataToFile(Collection<String[]> data, String query) {
-        Config config = new Config();
 
         LocalDate currentDate = LocalDate.now();
         String month = String.valueOf(currentDate.getMonth());
@@ -25,8 +25,8 @@ public class WriteToFile {
         String day = String.valueOf(currentDate.getDayOfMonth());
         try {
             for (int meter = 1; true; meter++) {
-                String fileDataResToStr = config.resultPath + "res_" + month + day + "_" + meter + ".csv";
-                String fileTxtToStr = config.resultPath + "query_" + month  + day + "_" + meter + ".txt";
+                String fileDataResToStr = resultPath + "res_" + month + day + "_" + meter + ".csv";
+                String fileTxtToStr = resultPath + "query_" + month  + day + "_" + meter + ".txt";
                 fileTo = Paths.get(fileDataResToStr);
                 fileToQuery = Paths.get(fileTxtToStr);
 
