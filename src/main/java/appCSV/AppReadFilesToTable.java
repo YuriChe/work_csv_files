@@ -14,6 +14,8 @@ import java.util.*;
 
 public class AppReadFilesToTable {
 
+//#ВНИМАНИЕ. у файла важно чтобы перчая строка была с верным количеством полей
+
     public static void main(String[] args) throws CsvException {
 
         final Config config = new Config();
@@ -38,13 +40,18 @@ public class AppReadFilesToTable {
         WriteListToTable<CustomerWB> write = new WriteListToTableImpl<>(sessionFactory);
 
         long counterRead;
+        int i = 0;
+        File[] files = GetArrFilesInDir.getArrFiles();
+        for (File file : files) {
+            i++;
+            /**
+             * Здесь установить основной метод чтения
+             */
+            readingCSV.setReader(readErrorCSV);
 
-        for (File file : GetArrFilesInDir.getArrFiles()) {
-
-            readingCSV.setReader(readCSV);
             listFromFile.clear();
             DataRecord record = new DataRecord();
-
+            System.out.println(i * 100 / files.length + "% complete.");
             try {
                 counterRead = readingCSV.read(file, listFromFile);// читает файл в список
 //                listFromFile.stream().flatMap(Arrays::stream).forEach(System.out::println);
@@ -52,7 +59,7 @@ public class AppReadFilesToTable {
                 record.setMethodReading(readingCSV.getReader().getClass().getName());
 
             } catch (CsvException e) {
-                e.printStackTrace();
+                System.out.println("Another method will be applied ...");
                 readingCSV.setReader(readErrorCSV); //если чтение с ошибкой, читает метод для ошибочных
                 listFromFile.clear();
                 counterRead = readingCSV.read(file, listFromFile);
@@ -74,7 +81,7 @@ public class AppReadFilesToTable {
             dataRecords.put(file, record);
         }
 
-        if (config.debug) {
+        if (true) {
             dataRecords.forEach((key, value) -> System.out.println("file=" + key +
                     ", rows=" + value.getCounterRowsFile() +
                     ", dbRecods=" + value.getCounterDBRecords() +

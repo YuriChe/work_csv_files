@@ -24,6 +24,7 @@ public class EnrollEntity {
             customerWB.setPhone_number(row[1]);
 
             customerWB.setName(row[2]);
+
             if (row[1] != null && row[1].length() > 2) {
                 if (row[3].equals(row[1].substring(1))) {
                     customerWB.setComment("");
@@ -37,16 +38,17 @@ public class EnrollEntity {
             customerWB.setWb_lon(row[6]);
 
             String address = new String();
-
             if (row[7] != null) {
-                int homeStr = row[7].toUpperCase().indexOf("ДОМ");
+                int homeStr = row[7].toUpperCase().indexOf(" КВ.");
                 if (homeStr == -1) {
-                    homeStr = row[7].toUpperCase().indexOf("Д.");
+                    homeStr = row[7].toUpperCase().indexOf(" КВ");
                 }
                 if (homeStr != -1) {
-                    address = row[7].substring(0, homeStr);
-                }
+                    address = row[7].substring(0, homeStr + 4);
+                } else address = row[7];
             } else address = "";
+//            address = row[7];
+
             customerWB.setAddress(address);
 
             customerWB.setGeohash(row[8]);

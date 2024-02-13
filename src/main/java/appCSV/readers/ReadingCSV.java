@@ -27,7 +27,7 @@ public class ReadingCSV<T> {
 
     /**
      * чтение из файлa *.csv в переданный список
-     *
+     * ВНИМАНИЕ. у файла важно чтобы перчая строка была с верным количеством полей
      * @param resultList
      * @return hashmap с файлом и количество операций чтния из него
      * @throws CsvException
@@ -44,7 +44,7 @@ public class ReadingCSV<T> {
                 if (debug) {
                     GetFileFields.fileFields(file);
                     resultList.stream().limit(10).forEach(System.out::println);
-                    System.out.println("Количество полей в списке " + listRead.size());
+                    System.out.println("Количество прочитанных из файла полей в списке=" + listRead.size());
                 }
 
                 resultList.addAll(listRead);

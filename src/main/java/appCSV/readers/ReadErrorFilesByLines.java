@@ -47,8 +47,7 @@ public class ReadErrorFilesByLines implements ReadCSV<String[]> {
         }
 // !!!!! внимание, тут чтение количества полей
         String[] fields = GetFileFields.fileFields(file);
-        System.out.println(fields);
-        resultList.addAll(listItemProcessing(listLines, 12));
+        resultList.addAll(listItemProcessing(listLines, fields.length));
 
         if (debug) {
             WriteToFile writeToFile = new WriteToFile();// запись ошибочных, исключенных строк
@@ -81,8 +80,9 @@ public class ReadErrorFilesByLines implements ReadCSV<String[]> {
 
             listResult.add(arrStringElementsTemp);
         }
-
-        System.out.println("Вторая фаза завершена. Элементов =" + listResult.size());
+        if (debug) {
+            System.out.println("Phase two is complete. Elements=" + listResult.size());
+        }
         return listResult;
     }
 
@@ -103,86 +103,3 @@ public class ReadErrorFilesByLines implements ReadCSV<String[]> {
 
     }
 }
-
-
-
-
-
-            /*if ((end = stringLine.toString().lastIndexOf("\"")) != -1) {
-                if ((begin = stringLine.toString().substring(0, end - 1).lastIndexOf("\"")) != -1) {
-                    if (begin != end) {
-                        if (begin != 0) {
-                            if (stringLine.charAt(begin - 1) != ',') {
-                                errorCode = errorCode.concat("{Invalid quotes without comma. Error line=" + count +
-                                        ", string=" + stringLineOriginal + "}\n");
-                                splitLine = null;
-                                return false;
-                            }
-                        }
-                        if (end != stringLine.length() - 1) {
-                            if (stringLine.charAt(end + 1) != ',') {
-                                errorCode = errorCode.concat("{Invalid quotes without comma. Error line=" + count +
-                                        ", string=" + stringLineOriginal + "}\n");
-                                splitLine = null;
-                                return false;
-                            }
-                        }*/
-/**
- * запись в 8-й элемент адреса
- * <p>
- * удаление субстроки обрамленной кавычками
- * <p>
- * удаление субстроки обрамленной кавычками
- * <p>
- * удаление субстроки обрамленной кавычками
- * <p>
- * удаление субстроки обрамленной кавычками
- * <p>
- * удаление субстроки обрамленной кавычками
- * <p>
- * удаление субстроки обрамленной кавычками
- * <p>
- * удаление субстроки обрамленной кавычками
- *//*
-
-                        resArr[7] = stringLine.substring(begin + 1, end);
-
-                        *//**
- *  удаление субстроки обрамленной кавычками
- *//*
-                        if (begin == 0) {
-                            if (end >= stringLine.length() - 1) {
-                                stringLine.delete(begin, end);
-                            } else {
-                                stringLine.delete(begin, end + 1);
-                            }
-                        } else {
-                            stringLine.delete(begin - 1, end + 1);
-                        }
-                        while ((index = stringLine.indexOf("\"", index)) != -1) {
-                            stringLine.replace(index, index + 1, "");
-                            index++;
-                        }
-
-                    } else {
-                        errorCode = errorCode.concat("{Empty quotes. Error line=" + count +
-                                ", string=" + stringLineOriginal + "}\n");
-                        splitLine = null;
-                        return false;
-                    }
-
-                } else {
-                    errorCode = errorCode.concat("{Unpaired quotation. Error line=" + count +
-                            ", string=" + stringLineOriginal + "}\n");
-                    splitLine = null;
-                    return false;
-                }
-            }*/
-        /*if (strArr.length < 11) {
-            errorCode = errorCode.concat("{Quantity elements . Error line=" + count + ", string=" + stringLineOriginal + "}\n");
-            return false;
-        }*//*
-            splitLine = null;
-            return true;
-        }
-    }*/
