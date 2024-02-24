@@ -5,8 +5,8 @@ import jakarta.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "wb_customers", schema = "wb")
-public class CustomerWB {
+@Table(name = "wb_customers_geo", schema = "wb")
+public class CustomerWBGeo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -29,10 +29,10 @@ public class CustomerWB {
     private String email;
 
     @Column(name = "wb_lat")
-    private String wb_lat;
+    private double wb_lat;
 
     @Column(name = "wb_lon")
-    private String wb_lon;
+    private double wb_lon;
 
     @Column(name = "address", nullable = false)
     private String address;
@@ -44,14 +44,29 @@ public class CustomerWB {
     @Deprecated
     private String old_id;*/
 
-    /*@Column (name = "wb_seq_pn_count")
-    @Deprecated
-    private String wb_seq_pn_count;*/
-    /*@Column (name = "wb_seq_pn_geo_count")
-    @Deprecated
-    private String wb_seq_pn_geo_count;*/
+    public int getWb_seq_pn_count() {
+        return wb_seq_pn_count;
+    }
 
-    public CustomerWB() {
+    public void setWb_seq_pn_count(int wb_seq_pn_count) {
+        this.wb_seq_pn_count = wb_seq_pn_count;
+    }
+
+    public int getWb_seq_pn_geo_count() {
+        return wb_seq_pn_geo_count;
+    }
+
+    public void setWb_seq_pn_geo_count(int wb_seq_pn_geo_count) {
+        this.wb_seq_pn_geo_count = wb_seq_pn_geo_count;
+    }
+
+    @Column (name = "wb_seq_pn_count")
+    private int wb_seq_pn_count;
+
+    @Column (name = "wb_seq_pn_geo_count")
+    private int wb_seq_pn_geo_count;
+
+    public CustomerWBGeo() {
     }
 
     @Override
@@ -117,19 +132,19 @@ public class CustomerWB {
         this.email = email;
     }
 
-    public String getWb_lat() {
+    public double getWb_lat() {
         return wb_lat;
     }
 
-    public void setWb_lat(String wb_lat) {
+    public void setWb_lat(double wb_lat) {
         this.wb_lat = wb_lat;
     }
 
-    public String getWb_lon() {
+    public double getWb_lon() {
         return wb_lon;
     }
 
-    public void setWb_lon(String wb_lon) {
+    public void setWb_lon(double wb_lon) {
         this.wb_lon = wb_lon;
     }
 
@@ -153,7 +168,7 @@ public class CustomerWB {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CustomerWB that = (CustomerWB) o;
+        CustomerWBGeo that = (CustomerWBGeo) o;
         return Objects.equals(getPhone_number(), that.getPhone_number()) && Objects.equals(getName(), that.getName()) && Objects.equals(getGeohash(), that.getGeohash());
     }
 

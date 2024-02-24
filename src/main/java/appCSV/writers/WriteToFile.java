@@ -17,18 +17,19 @@ public class WriteToFile {
     private Path fileTo;
     private Path fileToQuery;
 
-    public Path writeDataToFile(Collection<String[]> data, String query) {
+    public Path writeDataToFile(Collection<String[]> data, String query, int helpFile) {
 
         LocalDate currentDate = LocalDate.now();
         String month = String.valueOf(currentDate.getMonth());
         month = month.substring(0, 3).toLowerCase();
         String day = String.valueOf(currentDate.getDayOfMonth());
+        int count = 1;
         try {
             for (int meter = 1; true; meter++) {
+                count = meter;
                 String fileDataResToStr = resultPath + "res_" + month + day + "_" + meter + ".csv";
-                String fileTxtToStr = resultPath + "query_" + month  + day + "_" + meter + ".txt";
+
                 fileTo = Paths.get(fileDataResToStr);
-                fileToQuery = Paths.get(fileTxtToStr);
 
                 if (!Files.exists(fileTo)) {
                     Files.createFile(fileTo);
@@ -42,7 +43,11 @@ public class WriteToFile {
         // Вывод результата в файлы
         try (CSVWriter writer = new CSVWriter(new FileWriter(String.valueOf(fileTo), false))) {
             writer.writeAll(data); // запись данных в файл
-            Files.writeString(fileToQuery, query, StandardCharsets.UTF_8);// Запись строки в файл
+            if (helpFile == 1) {
+                String fileTxtToStr = resultPath + "query_" + month + day + "_" + count + ".txt";
+                fileToQuery = Paths.get(fileTxtToStr);
+                Files.writeString(fileToQuery, query, StandardCharsets.UTF_8);// Запись строки в файл
+            }
         } catch (IOException e) {
             e.printStackTrace();
             return null;

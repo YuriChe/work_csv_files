@@ -11,7 +11,7 @@ public class GetListCustomerFromDBImpl implements GetListFromDB<CustomerWB> {
     private String address;
 
     @Override
-    public void setAddress(String address) {
+    public void setHQLAddress(String address) {
         this.address = address;
     }
 
@@ -21,11 +21,13 @@ public class GetListCustomerFromDBImpl implements GetListFromDB<CustomerWB> {
         final String hql = """ 
                 FROM CustomerWB c
                 WHERE c.address ILIKE :addressPattern
-                      AND LENGTH(c.phone_number) = 11
-                      AND (c.phone_number LIKE '79%' OR c.comment LIKE '9%')
+                AND LENGTH(c.phone_number) = 11
+                AND (c.phone_number LIKE '79%' OR c.comment LIKE '9%')
                 """;
+
         Session session = sessionFactory.openSession();
         List<CustomerWB> resultList;
+
         if (number < 1) {
             resultList = session.createQuery(hql, CustomerWB.class)
                     .setParameter("addressPattern", address)
@@ -35,6 +37,8 @@ public class GetListCustomerFromDBImpl implements GetListFromDB<CustomerWB> {
                     .setParameter("addressPattern", address)
                     .setMaxResults(number)
                     .getResultList();
+
+        session.close();
 
         return resultList;
     }

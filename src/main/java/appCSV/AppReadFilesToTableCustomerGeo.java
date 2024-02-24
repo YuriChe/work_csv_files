@@ -2,20 +2,23 @@ package appCSV;
 
 import appCSV.config.Config;
 import appCSV.config.HibernateConfig;
-import appCSV.config.TypeRead;
 import appCSV.entity.CustomerWB;
+import appCSV.entity.CustomerWBGeo;
 import appCSV.entity.DataRecord;
 import appCSV.readers.*;
-import appCSV.writers.*;
+import appCSV.writers.WriteListToTable;
+import appCSV.writers.WriteListToTableImpl;
 import com.opencsv.exceptions.CsvException;
 import org.hibernate.SessionFactory;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
-import static appCSV.config.Config.typeRead;
+import static appCSV.config.Config.debug;
 
-public class AppReadFilesToTable {
+public class AppReadFilesToTableCustomerGeo {
 
 //#ВНИМАНИЕ. у файла важно чтобы перчая строка была с верным количеством полей
 
@@ -24,7 +27,7 @@ public class AppReadFilesToTable {
         Config.getInstance();
         SessionFactory sessionFactory = HibernateConfig.getSession().getSessionFactory();
 
-        WriteListToTable<CustomerWB> write = new WriteListToTableImpl<>(sessionFactory);
+        WriteListToTable<CustomerWBGeo> write = new WriteListToTableImpl<>(sessionFactory);
 
         ReadCSV<String[]> readCSV = new ReadCSV_All();// читает весь файл через framework openCVS
         ReadCSV<String[]> readCSVByLine = new ReadCSV_ByLine();// читает построчно через framework openCVS
@@ -37,10 +40,9 @@ public class AppReadFilesToTable {
 //        ReorganizeList<CustomerWB> reorganizeList = new ReorganizeListImpl();
 
         List<String[]> listFromFile = new ArrayList<>();
-        List<CustomerWB> listCustomerWB = new ArrayList<>();
+        List<CustomerWBGeo> customerWBGeos = new ArrayList<>();
 
-        EnrollEntity enrollEntity = new EnrollEntity();
-
+        EnrollEntityInt enrollEntity = new EnrollEntityInt();
 
         long counterRead;
         int i = 0;
@@ -48,13 +50,8 @@ public class AppReadFilesToTable {
 
         for (File file : files) {
             i++;
-
-            // Здесь установить основной метод чтения
-            if (typeRead == TypeRead.ERROR) {
-                readingCSV.setReader(readErrorCSV);
-            } else {
-                readingCSV.setReader(readCSV);
-            }
+// устанавливается метод чтения по умолчанию
+            readingCSV.setReader(readErrorCSV);
 
             listFromFile.clear();
             DataRecord record = new DataRecord();
@@ -74,10 +71,14 @@ public class AppReadFilesToTable {
             }
 
             System.out.println(i * 100 / files.length + "% complete.");
-            listCustomerWB.clear();
-            enrollEntity.enrollToCustomers(listFromFile, listCustomerWB);// преобразует список из строк файла в список entity
+            customerWBGeos.clear();
+            Long rec = enrollEntity.enrollToCustomers(listFromFile, customerWBGeos);// преобразует список из строк файла в список entity
 
-            long countTransaction = write.writeListToTable(listCustomerWB, 0, -1); //запись в БД
+            if (debug) {
+                System.out.println(rec + " ЗАНЕСЕНО В ENTITY");
+            }
+
+            long countTransaction = write.writeListToTable(customerWBGeos, 0, -1); //запись в БД
 
 //            List<CustomerWB> listCustomerUnique = reorganizeList.toUniqueList(customerWBS);
             if (countTransaction == -1) {
@@ -87,7 +88,6 @@ public class AppReadFilesToTable {
             }
             dataRecords.put(file, record);
         }
-
 
         if (true) {
             dataRecords.forEach((key, value) -> System.out.println("file=" + key +

@@ -9,6 +9,7 @@ import appCSV.writers.ReorganizeListImpl;
 import appCSV.writers.WriteToFile;
 import org.hibernate.SessionFactory;
 
+import java.lang.module.Configuration;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ import static appCSV.writers.ReorganizeListImpl.trimSplitStreets;
 public class AppCullFromTable {
     public static void main(String[] args) {
 
-        Config config = new Config();
+        Config.getInstance();
 
         SessionFactory sessionFactory = HibernateConfig.getSession().getSessionFactory();
 
@@ -41,11 +42,21 @@ public class AppCullFromTable {
 
             String hqlAddress = "%" + city + "%" + address + "%";
 
-            getListCustomerFromDB.setAddress(hqlAddress);
+            if (debug) {
+                System.out.println(hqlAddress);
+            }
+
+            getListCustomerFromDB.setHQLAddress(hqlAddress);
 
             listResult.addAll(getListCustomerFromDB.resultList(sessionFactory, 0));
 
-            System.out.println("Выполнено на " + (i * 100 / (listStreets.size() + 1)) + "%");
+            if (debug) {
+                listResult.stream()
+                        .limit(10)
+                        .forEach(System.out::println);
+            }
+
+            System.out.println((i * 100 / (listStreets.size() + 1)) + "% complete");
             i++;
         }
 
@@ -67,7 +78,7 @@ public class AppCullFromTable {
                         "{Query=" + getCurrentStreets().toLowerCase() + "}\n" +
                         "{Records=" + listResultUnique.size() + "}\n";
 
-        Path recordToFile = writeToFile.writeDataToFile(reorganizeList.toArrStringForFile(listResultUnique), strToTXT);
+        Path recordToFile = writeToFile.writeDataToFile(reorganizeList.toArrStringForFile(listResultUnique), strToTXT, 1);
 
         if (recordToFile != null) {
             System.out.println("Запись данных по запросу произведена в файл: " + recordToFile);

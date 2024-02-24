@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface GetListFromDB<T> {
 
-    void setAddress(String address);
+    void setHQLAddress(String address);
 
     List<T> resultList(SessionFactory sessionFactory, int number);
 

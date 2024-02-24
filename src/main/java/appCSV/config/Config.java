@@ -5,6 +5,8 @@ import java.util.Properties;
 
 public final class Config {
 
+    private final static Config instance = new Config();
+
     private static final String CONFIG_FILE = "config.properties";
 
     private static String currentStreets;
@@ -15,13 +17,18 @@ public final class Config {
     public static String pathQueryToSave;
     public static String pathErrorFiles;
     public static boolean isDeleteFirstLine;
+    public static TypeRead typeRead;
 
 
     public static String getCurrentStreets() {
         return currentStreets;
     }
 
-    public Config() {
+    public static Config getInstance() {
+        return instance;
+    }
+
+    private Config() {
         loadConfig();
     }
 
@@ -40,6 +47,12 @@ public final class Config {
             pathErrorFiles = properties.getProperty("path.wb_errors");
             currentStreets = loadQueries();
             isDeleteFirstLine = properties.getProperty("column.titles", "true").equals("true");
+            switch (properties.getProperty("type.read", "basic")) {
+                case "error" :  typeRead = TypeRead.ERROR;
+                break;
+                case "basic" : typeRead = TypeRead.BASIC;
+                break;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

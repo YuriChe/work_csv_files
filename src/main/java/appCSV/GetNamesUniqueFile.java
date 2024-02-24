@@ -1,30 +1,25 @@
 package appCSV;
 
 import appCSV.config.Config;
-import appCSV.config.HibernateConfig;
-import appCSV.config.TypeRead;
-import appCSV.entity.CustomerWB;
 import appCSV.entity.DataRecord;
+import appCSV.names.GetNamesImpl;
 import appCSV.readers.*;
-import appCSV.writers.*;
 import com.opencsv.exceptions.CsvException;
-import org.hibernate.SessionFactory;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 
-import static appCSV.config.Config.typeRead;
+import static appCSV.config.Config.debug;
 
-public class AppReadFilesToTable {
-
-//#ВНИМАНИЕ. у файла важно чтобы перчая строка была с верным количеством полей
+public class GetNamesUniqueFile {
 
     public static void main(String[] args) throws CsvException {
 
-        Config.getInstance();
-        SessionFactory sessionFactory = HibernateConfig.getSession().getSessionFactory();
 
-        WriteListToTable<CustomerWB> write = new WriteListToTableImpl<>(sessionFactory);
+        Config.getInstance();
 
         ReadCSV<String[]> readCSV = new ReadCSV_All();// читает весь файл через framework openCVS
         ReadCSV<String[]> readCSVByLine = new ReadCSV_ByLine();// читает построчно через framework openCVS
@@ -33,31 +28,26 @@ public class AppReadFilesToTable {
         HashMap<File, DataRecord> dataRecords = new HashMap<>();// output деталей чтения
 
         ReadingCSV<String[]> readingCSV = new ReadingCSV<>(readErrorCSV);// контроллер reader из файла
+        GetNamesImpl getNames = new GetNamesImpl();
 
 //        ReorganizeList<CustomerWB> reorganizeList = new ReorganizeListImpl();
 
         List<String[]> listFromFile = new ArrayList<>();
-        List<CustomerWB> listCustomerWB = new ArrayList<>();
-
-        EnrollEntity enrollEntity = new EnrollEntity();
-
+        LinkedHashMap<String, Long> resultMapNames = new LinkedHashMap<>();
 
         long counterRead;
         int i = 0;
         File[] files = GetArrFilesInDir.getArrFiles();
-
         for (File file : files) {
             i++;
 
             // Здесь установить основной метод чтения
-            if (typeRead == TypeRead.ERROR) {
-                readingCSV.setReader(readErrorCSV);
-            } else {
-                readingCSV.setReader(readCSV);
-            }
+            readingCSV.setReader(readErrorCSV);
 
             listFromFile.clear();
             DataRecord record = new DataRecord();
+            System.out.println(i * 100 / files.length + "% complete.");
+
             try {
                 counterRead = readingCSV.read(file, listFromFile);// читает файл в список
 //                listFromFile.stream().flatMap(Arrays::stream).forEach(System.out::println);
@@ -72,30 +62,35 @@ public class AppReadFilesToTable {
                 record.setCounterRowsFile(counterRead);
                 record.setMethodReading(readingCSV.getReader().getClass().getName());
             }
-
-            System.out.println(i * 100 / files.length + "% complete.");
-            listCustomerWB.clear();
-            enrollEntity.enrollToCustomers(listFromFile, listCustomerWB);// преобразует список из строк файла в список entity
-
-            long countTransaction = write.writeListToTable(listCustomerWB, 0, -1); //запись в БД
-
 //            List<CustomerWB> listCustomerUnique = reorganizeList.toUniqueList(customerWBS);
-            if (countTransaction == -1) {
-                System.err.println("No data has been recorded!");
-            } else {
-                record.setCounterDBRecords(countTransaction);
-            }
             dataRecords.put(file, record);
+
+            HashMap<String, Long> mapFromFile = getNames.countNames(listFromFile);
+
+            for (String key : mapFromFile.keySet()) {
+                    resultMapNames.computeIfPresent(key, (k, v) -> v + mapFromFile.get(key));
+                    resultMapNames.computeIfAbsent(key, v -> mapFromFile.get(key));
+            }
         }
 
+        LinkedHashMap <String, Long> resultNames = getNames.sortMapNames(resultMapNames);
+        getNames.printSortNames(resultNames, 5000, 5000);
+        System.out.println("Elements=" + resultNames.size());
 
-        if (true) {
+
+        /*ArrayList<String[]> resultForFile = new ArrayList<>(resultMapNames.size());
+
+        resultMapNames.entrySet()
+                .forEach(entry -> {
+                    String[] nameC = {entry.getKey(), String.valueOf(entry.getValue())};
+                    resultNames.add(nameC);
+                });*/
+
+        if (debug) {
             dataRecords.forEach((key, value) -> System.out.println("file=" + key +
                     ", rows=" + value.getCounterRowsFile() +
                     ", dbRecods=" + value.getCounterDBRecords() +
                     ", methodreading=" + value.getMethodReading()));
         }
-
-        sessionFactory.close();
     }
 }

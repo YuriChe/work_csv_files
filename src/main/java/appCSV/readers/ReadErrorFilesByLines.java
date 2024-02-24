@@ -55,7 +55,7 @@ public class ReadErrorFilesByLines implements ReadCSV<String[]> {
                     "{Item read count=" + counter + "}" +
                     "{List item count =" + resultList.size() + "}\n";
 
-            writeToFile.writeDataToFile(resultList, errorCode);
+            writeToFile.writeDataToFile(resultList, errorCode, 1);
         }
 
         return counter.get();
