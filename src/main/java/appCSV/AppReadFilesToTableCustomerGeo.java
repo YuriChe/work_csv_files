@@ -2,7 +2,6 @@ package appCSV;
 
 import appCSV.config.Config;
 import appCSV.config.HibernateConfig;
-import appCSV.entity.CustomerWB;
 import appCSV.entity.CustomerWBGeo;
 import appCSV.entity.DataRecord;
 import appCSV.readers.*;
@@ -18,7 +17,7 @@ import java.util.List;
 
 import static appCSV.config.Config.debug;
 
-public class AppReadFilesToTableCustomerGeo {
+public class    AppReadFilesToTableCustomerGeo {
 
 //#ВНИМАНИЕ. у файла важно чтобы перчая строка была с верным количеством полей
 
@@ -42,7 +41,7 @@ public class AppReadFilesToTableCustomerGeo {
         List<String[]> listFromFile = new ArrayList<>();
         List<CustomerWBGeo> customerWBGeos = new ArrayList<>();
 
-        EnrollEntityInt enrollEntity = new EnrollEntityInt();
+        EnrollEntityGeo enrollEntity = new EnrollEntityGeo();
 
         long counterRead;
         int i = 0;
@@ -72,7 +71,7 @@ public class AppReadFilesToTableCustomerGeo {
 
             System.out.println(i * 100 / files.length + "% complete.");
             customerWBGeos.clear();
-            Long rec = enrollEntity.enrollToCustomers(listFromFile, customerWBGeos);// преобразует список из строк файла в список entity
+            Long rec = enrollEntity.enrollToCustomersGeo(listFromFile, customerWBGeos);// преобразует список из строк файла в список entity
 
             if (debug) {
                 System.out.println(rec + " ЗАНЕСЕНО В ENTITY");

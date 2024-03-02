@@ -17,7 +17,7 @@ public class AppReadFromCSVFiles {
 
     public static void main(String[] args) throws CsvException {
 
-        final Config config = new Config();
+        Config.getInstance();
 
         ReadCSV<String[]> readCSV = new ReadCSV_All();// читает весь файл через framework openCVS
         ReadCSV<String[]> readCSVByLine = new ReadCSV_ByLine();// читает построчно через framework openCVS

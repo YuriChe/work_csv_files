@@ -17,7 +17,7 @@ import static appCSV.config.Config.typeRead;
 
 public class AppReadFilesToTable {
 
-//#ВНИМАНИЕ. у файла важно чтобы перчая строка была с верным количеством полей
+//#ВНИМАНИЕ. у файла важно чтобы первая строка была с верным количеством полей
 
     public static void main(String[] args) throws CsvException {
 
@@ -87,7 +87,6 @@ public class AppReadFilesToTable {
             }
             dataRecords.put(file, record);
         }
-
 
         if (true) {
             dataRecords.forEach((key, value) -> System.out.println("file=" + key +
