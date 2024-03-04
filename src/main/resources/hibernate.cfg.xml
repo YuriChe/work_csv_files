@@ -12,6 +12,6 @@
         <property name="show_sql">false</property>
         <property name="hbm2ddl.auto">create</property>
         <property name="hibernate.default_schema">wb</property>
-        <mapping class="appCSV.entity.CustomerWBGeo"/>
+        <mapping class="appCSV.entity.YaOrder"/>
     </session-factory>
 </hibernate-configuration>

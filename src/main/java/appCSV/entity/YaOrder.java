@@ -21,6 +21,17 @@ public class YaOrder {
     private String street;
     @Column(name = "house")
     private String house;
+
+    public String getDoorcode() {
+        return doorcode;
+    }
+
+    public void setDoorcode(String doorcode) {
+        this.doorcode = doorcode;
+    }
+
+    @Column(name = "doorcode")
+    private String doorcode;
     @Column(name = "region_id")
     private int region_id;
     @Column(name = "latitude")
